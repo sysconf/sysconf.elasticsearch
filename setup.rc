@@ -1,0 +1,21 @@
+# Setup script for sysconf layer "sysconf.owncloud"  -*- shell-script -*-
+
+_packages=""
+_packages="$_packages mysql-server"
+
+sysconf_require_packages "$_packages"
+
+
+# mysql_run "UPDATE mysql.user SET Password = PASSWORD('${SYSCONF_MYSQL_ROOT_PASSWORD}') WHERE User = 'root'"
+
+# Create MySQL database and user for ${SYSCONF_MYSQL_APP_DATABASE}
+mysql_run "CREATE DATABASE IF NOT EXISTS ${SYSCONF_MYSQL_APP_DATABASE}"
+_count=$(mysql_run "SELECT User FROM mysql.user WHERE User = '${SYSCONF_MYSQL_APP_USER}'" \
+    | grep ^${SYSCONF_MYSQL_APP_USER} | wc -l)
+if [ $_count -eq 0 ]; then
+    nef_log "Fixing MySQL user: ${SYSCONF_MYSQL_APP_USER}"
+    mysql_run "CREATE USER '${SYSCONF_MYSQL_APP_USER}'@'%' IDENTIFIED BY '${SYSCONF_MYSQL_APP_USER}'"
+    mysql_run "GRANT ALL PRIVILEGES ON ${SYSCONF_MYSQL_APP_DATABASE}.* TO '${SYSCONF_MYSQL_APP_USER}' "
+    mysql_run "FLUSH PRIVILEGES"
+    mysql_run "SET PASSWORD FOR '${SYSCONF_MYSQL_APP_USER}'@'%' = PASSWORD('${SYSCONF_MYSQL_APP_PASSWORD}');"
+fi
