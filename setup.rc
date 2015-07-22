@@ -1,6 +1,6 @@
 # Setup script for sysconf layer "sysconf.elasticsearch"  -*- shell-script -*-
 
 _packages=""
-_packages="$_packages mysql-server"
+_packages="$_packages elasticsearch"
 
 sysconf_require_packages "$_packages"
