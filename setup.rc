@@ -1,6 +1,17 @@
 # Setup script for sysconf layer "sysconf.elasticsearch"  -*- shell-script -*-
 
 _packages=""
-_packages="$_packages elasticsearch"
+_packages="$_packages elasticsearch openjdk-7-jre"
 
 sysconf_require_packages "$_packages"
+
+
+if [ "$(find /etc/rc?.d -name '???elasticsearch' | wc -l)" -eq 0 ]; then
+
+    update-rc.d elasticsearch defaults
+
+    if ! service elasticsearch status /dev/null; then
+        service elasticsearch start
+    fi
+
+fi
