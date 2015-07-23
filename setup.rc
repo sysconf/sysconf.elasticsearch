@@ -5,13 +5,20 @@ _packages="$_packages elasticsearch openjdk-7-jre"
 
 sysconf_require_packages "$_packages"
 
-
-if [ "$(find /etc/rc?.d -name '???elasticsearch' | wc -l)" -eq 0 ]; then
-
-    update-rc.d elasticsearch defaults
-
-    if ! service elasticsearch status /dev/null; then
-        service elasticsearch start
+if cd /usr/share/elasticsearch; then
+    if [ ! -d plugins/marvel ]; then
+        ./bin/plugin -i elasticsearch/marvel/latest
     fi
 
+    if [ "$(find /etc/rc?.d -name '???elasticsearch' | wc -l)" -eq 0 ]; then
+
+        update-rc.d elasticsearch defaults
+
+        if ! service elasticsearch status /dev/null; then
+            service elasticsearch start
+        fi
+
+    fi
+else
+    nef_log "/usr/share/elasticsearch does not exist: is ElasticSearch installed?"
 fi
