@@ -1,0 +1,21 @@
+# Environment (config) for sysconf.mysql        -*- shell-script -*-
+
+# SYSCONF_MYSQL_ROOT_PASSWORD=Na2PhoolkooMii6y
+SYSCONF_MYSQL_APP_DATABASE=application
+SYSCONF_MYSQL_APP_USER=application
+SYSCONF_MYSQL_APP_PASSWORD=ii7Eixiezi4oGe2g
+
+
+################################################################################
+# Utility functions, available to the setup.rc of all sysconf layers
+# that depend on us
+
+mysql_run() {
+    echo "MySQL query: $1" >&2
+    echo "$1" >&2
+    echo "$1" | mysql
+    local _status=${PIPESTATUS[1]}
+    if [ $_status -ne 0 ]; then
+        nef_fatal "MySQL query failed with status $_status"
+    fi
+}
